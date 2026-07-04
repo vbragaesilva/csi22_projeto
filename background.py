@@ -4,10 +4,6 @@ class Background:
     """
     Esta classe define o Plano de Fundo do jogo
     """
-    image = None
-    margin_left = None
-    margin_right = None
-
     def __init__(self):
 
         background_fig = pygame.image.load("Images/background.png")

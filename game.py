@@ -9,21 +9,9 @@ from player import Player
 from background import Background
 from hazard import Hazard
 class Game:
-    screen = None
-    screen_size = None
-    width = WIDTH
-    height = HEIGHT
-    run = True
-    background = None
-    player = None
-    hazard_1 = hazard_2 = hazard_3 = hazard_4 = hazard_5 = None
-    render_text_bateulateral = None
-    render_text_perdeu = None
-
     # movimento do Player
     DIREITA = pygame.K_RIGHT
     ESQUERDA = pygame.K_LEFT
-    mudar_x = 0.0
 
 
     def __init__(self):
@@ -32,6 +20,18 @@ class Game:
         Função que inicializa o pygame, define a resolução da tela,
         caption, e desabilita o mouse.
         """
+
+        self.width = WIDTH
+        self.height = HEIGHT
+        self.run = True
+        self.background = None
+        self.player = None
+        self.hazard_1 = None
+        self.hazard_2 = None
+        self.hazard_3 = None
+        self.hazard_4 = None
+        self.hazard_5 = None
+        self.mudar_x = 0.0
 
         pygame.init()
 
