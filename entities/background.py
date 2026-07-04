@@ -34,52 +34,14 @@ class Background:
     # Define posições do Plano de Fundo para criar o movimento
     def move (self, screen, movL_x, movL_y, movR_x, movR_y):
 
-        #movimento background
-        screen.blit(self.image, (movL_x, movL_y))
-        screen.blit(self.image, (movL_x, movL_y + 600))
-        screen.blit(self.image, (movL_x, movL_y + 1200))
-        screen.blit(self.image, (movL_x, movL_y + 1800))
-        screen.blit(self.image, (movL_x, movL_y + 2400))
-        screen.blit(self.image, (movL_x, movL_y + 3000))
-        screen.blit(self.image, (movL_x, movL_y - 600))
-        screen.blit(self.image, (movL_x, movL_y - 1200))
-        screen.blit(self.image, (movL_x, movL_y - 1800))
-        screen.blit(self.image, (movL_x, movL_y - 2400))
-        screen.blit(self.image, (movL_x, movL_y - 3000))
-        screen.blit(self.image, (movL_x, movL_y - 3600))
-        screen.blit(self.image, (movL_x, movL_y - 4200))
-        screen.blit(self.image, (movL_x, movL_y - 4800))
+        ALTURA_TILE = 600
+        N_TILES_ACIMA = 8
+        N_TILES_ABAIXO = 5
 
-        # movimento margem esquerda
-        screen.blit(self.margin_left, (movL_x, movL_y))
-        screen.blit(self.margin_left, (movL_x, movL_y + 600))
-        screen.blit(self.margin_left, (movL_x, movL_y + 1200))
-        screen.blit(self.margin_left, (movL_x, movL_y + 1800))
-        screen.blit(self.margin_left, (movL_x, movL_y + 2400))
-        screen.blit(self.margin_left, (movL_x, movL_y + 3000))
-        screen.blit(self.margin_left, (movL_x, movL_y - 600))
-        screen.blit(self.margin_left, (movL_x, movL_y - 1200))
-        screen.blit(self.margin_left, (movL_x, movL_y - 1800))
-        screen.blit(self.margin_left, (movL_x, movL_y - 2400))
-        screen.blit(self.margin_left, (movL_x, movL_y - 3000))
-        screen.blit(self.margin_left, (movL_x, movL_y - 3600))
-        screen.blit(self.margin_left, (movL_x, movL_y - 4200))
-        screen.blit(self.margin_left, (movL_x, movL_y - 4800))
-
-        # movimento margem direita
-        screen.blit(self.margin_right, (movR_x, movR_y))
-        screen.blit(self.margin_right, (movR_x, movR_y + 600))
-        screen.blit(self.margin_right, (movR_x, movR_y + 1200))
-        screen.blit(self.margin_right, (movR_x, movR_y + 1800))
-        screen.blit(self.margin_right, (movR_x, movR_y + 2400))
-        screen.blit(self.margin_right, (movR_x, movR_y + 3000))
-        screen.blit(self.margin_right, (movR_x, movR_y - 600))
-        screen.blit(self.margin_right, (movR_x, movR_y - 1200))
-        screen.blit(self.margin_right, (movR_x, movR_y - 1800))
-        screen.blit(self.margin_right, (movR_x, movR_y - 2400))
-        screen.blit(self.margin_right, (movR_x, movR_y - 3000))
-        screen.blit(self.margin_right, (movR_x, movR_y - 3600))
-        screen.blit(self.margin_right, (movR_x, movR_y - 4200))
-        screen.blit(self.margin_right, (movR_x, movR_y - 4800))
+        for i in range(-N_TILES_ACIMA, N_TILES_ABAIXO + 1):
+            dy = i * ALTURA_TILE
+            screen.blit(self.image,        (movL_x, movL_y + dy))
+            screen.blit(self.margin_left,  (movL_x, movL_y + dy))
+            screen.blit(self.margin_right, (movR_x, movR_y + dy))
     # move()
 # Background:
