@@ -5,9 +5,11 @@ from constants import (
 import pygame
 import random
 import time
-from player import Player
-from background import Background
-from hazard import Hazard
+from entities.player import Player
+from entities.background import Background
+from entities.hazard import Hazard
+from score import Score
+
 class Game:
     # movimento do Player
     DIREITA = pygame.K_RIGHT
@@ -94,21 +96,12 @@ class Game:
         self.background.move (self.screen, obj_movL_x, obj_movL_y, obj_movR_x,obj_movR_y)
     # move_background()
 
-    # Informa a quantidade de hazard que passaram e a Pontuação
-    def score_card(self, screen, h_passou, score):
-        font = pygame.font.SysFont(None, FONT_SIZE_SCORE)
-        passou = font.render("Passou: " + str(h_passou), True, (255, 255, 128))
-        score = font.render("Score: " + str(score), True, (253, 231, 32))
-        screen.blit(passou, (0, 50))
-        screen.blit(score, (0, 100))
-    #score_card()
-
     def loop(self):
         """
         Laço principal
         """
-        score = 0
-        h_passou = 0
+
+        self.scoreboard = Score()
 
         # variáveis para movimento de Plano de Fundo/Background
         velocidade_background = BACKGROUND_SPEED
@@ -187,7 +180,7 @@ class Game:
             self.draw_player (x, y)
 
             # Mostrar score
-            self.score_card(self.screen, h_passou, score)
+            self.scoreboard.draw(self.screen)
 
             # Restrições do movimento do Player
             # Se o Player bate na lateral não é Game Over
@@ -211,8 +204,7 @@ class Game:
                 h_x = random.randrange(125, 650 - h_height)
                 hzrd = random.randrange(len(self.hazards))
                 # determinando quantos hazard passaram e a pontuação
-                h_passou = h_passou + 1
-                score = h_passou * SCORE_PER_HAZARD
+                self.scoreboard.counter_passed_hazard()
 
             # restrições para o game over
             if y < h_y + h_height:
