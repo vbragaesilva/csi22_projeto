@@ -1,22 +1,10 @@
 from constants import HAZARD_WIDTH, HAZARD_HEIGHT
-import pygame
-class Hazard:
+from object import Object
 
-    image = None
-    x = None
-    y = None
+
+class Hazard(Object):
 
     def __init__(self, img, x, y):
-        hazard_fig = pygame.image.load(img)
-        hazard_fig.convert()
-        hazard_fig = pygame.transform.scale(hazard_fig, (HAZARD_WIDTH, HAZARD_HEIGHT))
-        self.image = hazard_fig
-        self.x = x
-        self.y = y
+        super().__init__(img, x, y, (HAZARD_WIDTH, HAZARD_HEIGHT))
     # __init__()
-
-    # Desenhar Hazard
-    def draw (self, screen, x, y):
-        screen.blit(self.image, (x, y))
-    #draw()
 # Hazard:

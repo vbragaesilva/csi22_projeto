@@ -1,24 +1,19 @@
 from constants import PLAYER_WIDTH, PLAYER_HEIGHT
-import pygame
-class Player:
+from object import Object
+
+
+class Player(Object):
     """
     Classe Jogador
     """
-    image = None
-    x = None
-    y = None
-
     def __init__(self, x, y):
-        player_fig = pygame.image.load("Images/player.png")
-        player_fig.convert()
-        player_fig = pygame.transform.scale(player_fig, (PLAYER_WIDTH, PLAYER_HEIGHT))
-        self.image = player_fig
-        self.x = x
-        self.y = y
+        super().__init__(
+            "Images/player.png",
+            x,
+            y,
+            (PLAYER_WIDTH, PLAYER_HEIGHT),
+            margem_esquerda=20,
+            margem_direita=20,
+        )
     # __init__()
-
-    # Desenhar Player
-    def draw (self, screen, x, y):
-        screen.blit(self.image, (x, y))
-    #draw()
 # Player:

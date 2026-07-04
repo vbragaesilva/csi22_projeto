@@ -26,7 +26,7 @@ class Game:
     mudar_x = 0.0
 
 
-    def __init__(self, size, fullscreen):
+    def __init__(self):
 
         """
         Função que inicializa o pygame, define a resolução da tela,
