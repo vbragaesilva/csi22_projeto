@@ -199,10 +199,9 @@ class Game:
 
             # definindo onde hazard vai aparecer, recomeçando a posição do obstaculo e da faixa
             if h_y > self.height:
-                h_y = 0 - h_height
                 faixaA_y = 0
-                h_x = random.randrange(125, 650 - h_height)
                 hzrd = random.randrange(len(self.hazards))
+                h_x, h_y = self.hazards[hzrd].reaparecer()
                 # determinando quantos hazard passaram e a pontuação
                 self.scoreboard.counter_passed_hazard()
 
