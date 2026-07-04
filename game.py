@@ -26,11 +26,7 @@ class Game:
         self.run = True
         self.background = None
         self.player = None
-        self.hazard_1 = None
-        self.hazard_2 = None
-        self.hazard_3 = None
-        self.hazard_4 = None
-        self.hazard_5 = None
+        self.hazards = []
         self.mudar_x = 0.0
 
         pygame.init()
@@ -90,16 +86,7 @@ class Game:
 
     # Desenha Hazard
     def draw_hazard (self, hzrd, x, y):
-        if hzrd == 0:
-            self.hazard_1.draw(self.screen, x, y)
-        elif hzrd == 1:
-            self.hazard_2.draw(self.screen, x, y)
-        elif hzrd == 2:
-            self.hazard_3.draw(self.screen, x, y)
-        elif hzrd == 3:
-            self.hazard_4.draw(self.screen, x, y)
-        elif hzrd == 4:
-            self.hazard_5.draw(self.screen, x, y)
+        self.hazards[hzrd].draw(self.screen, x, y)
     # draw_hazard()
 
     # Define as posições dos objetos para criar o movimento
@@ -155,20 +142,14 @@ class Game:
         # Criar o Player
         self.player = Player(x, y)
 
-        # Criar Harzard_1
-        self.hazard_1 = Hazard("Images/nave.png", h_x, h_y)
-
-        # Criar Harzard_2
-        self.hazard_2 = Hazard("Images/satelite.png", h_x, h_y)
-
-        # Criar Harzard_3
-        self.hazard_3 = Hazard("Images/cometa.png", h_x, h_y)
-
-        # Criar Harzard_4
-        self.hazard_4 = Hazard("Images/planeta.png", h_x, h_y)
-
-        # Criar Harzard_5
-        self.hazard_5 = Hazard("Images/ameaca.png", h_x, h_y)
+        # Criar Hazards
+        self.hazards = [
+            Hazard("Images/nave.png", h_x, h_y),
+            Hazard("Images/satelite.png", h_x, h_y),
+            Hazard("Images/cometa.png", h_x, h_y),
+            Hazard("Images/planeta.png", h_x, h_y),
+            Hazard("Images/ameaca.png", h_x, h_y),
+        ]
 
         # Inicializamos o relogio e o dt que vai limitar o valor de FPS
         # frames por segundo do jogo
@@ -228,7 +209,7 @@ class Game:
                 h_y = 0 - h_height
                 faixaA_y = 0
                 h_x = random.randrange(125, 650 - h_height)
-                hzrd = random.randint(0, 4)
+                hzrd = random.randrange(len(self.hazards))
                 # determinando quantos hazard passaram e a pontuação
                 h_passou = h_passou + 1
                 score = h_passou * SCORE_PER_HAZARD
