@@ -4,6 +4,24 @@ import pygame
 import random
 import time
 
+WIDTH = 800
+HEIGHT = 600
+MARGEM_ESQUERDA = 60
+MARGEM_DIREITA = 740
+
+PLAYER_WIDTH = 90
+PLAYER_HEIGHT = 90
+HAZARD_WIDTH = 130
+HAZARD_HEIGHT = 130
+PLAYER_SPEED = 3
+BACKGROUND_SPEED = 5
+HAZARD_SPEED = 7
+SCORE_PER_HAZARD = 10
+COLLISION_DELAY = 3
+FONT_SIZE_MESSAGE = 100
+FONT_SIZE_SCORE = 35
+FRAME_TIME_MS = 16
+
 class Background:
     """
     Esta classe define o Plano de Fundo do jogo
@@ -20,12 +38,12 @@ class Background:
 
         margin_left_fig = pygame.image.load("Images/margin_1.png")
         margin_left_fig.convert()
-        margin_left_fig = pygame.transform.scale(margin_left_fig, (60, 600))
+        margin_left_fig = pygame.transform.scale(margin_left_fig, (MARGEM_ESQUERDA, HEIGHT))
         self.margin_left = margin_left_fig
 
         margin_right_fig = pygame.image.load("Images/margin_2.png")
         margin_right_fig.convert()
-        margin_right_fig = pygame.transform.scale(margin_right_fig, (60, 600))
+        margin_right_fig = pygame.transform.scale(margin_right_fig, (WIDTH-MARGEM_DIREITA, HEIGHT))
         self.margin_right = margin_right_fig
     # __init__()
 
@@ -36,7 +54,7 @@ class Background:
     def draw(self, screen):
         screen.blit(self.image, (0, 0))
         screen.blit(self.margin_left, (0, 0))
-        screen.blit(self.margin_right, (740, 0))
+        screen.blit(self.margin_right, (MARGEM_DIREITA, 0))
     # draw()
 
     # Define posições do Plano de Fundo para criar o movimento
@@ -103,7 +121,7 @@ class Player:
     def __init__(self, x, y):
         player_fig = pygame.image.load("Images/player.png")
         player_fig.convert()
-        player_fig = pygame.transform.scale(player_fig, (90, 90))
+        player_fig = pygame.transform.scale(player_fig, (PLAYER_WIDTH, PLAYER_HEIGHT))
         self.image = player_fig
         self.x = x
         self.y = y
@@ -124,7 +142,7 @@ class Hazard:
     def __init__(self, img, x, y):
         hazard_fig = pygame.image.load(img)
         hazard_fig.convert()
-        hazard_fig = pygame.transform.scale(hazard_fig, (130, 130))
+        hazard_fig = pygame.transform.scale(hazard_fig, (HAZARD_WIDTH, HAZARD_HEIGHT))
         self.image = hazard_fig
         self.x = x
         self.y = y
@@ -139,8 +157,8 @@ class Hazard:
 class Game:
     screen = None
     screen_size = None
-    width = 800
-    height = 600
+    width = WIDTH
+    height = HEIGHT
     run = True
     background = None
     player = None
@@ -170,7 +188,7 @@ class Game:
         pygame.display.set_caption('Viagem Espacial')
 
         # fontes
-        my_font = pygame.font.Font("Fonts/Fonte4.ttf", 100)
+        my_font = pygame.font.Font("Fonts/Fonte4.ttf", FONT_SIZE_MESSAGE)
 
         # Mensagens para o jogador
         self.render_text_bateulateral = my_font.render("COLISÃO!", 0,(255, 255, 255))  # ("texto", opaco/transparente 0/1, cor do texto)
@@ -191,10 +209,10 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 # se clicar na seta da esquerda, anda 3 para a esquerda no eixo x
                 if event.key == self.ESQUERDA:
-                    self.mudar_x = -3
+                    self.mudar_x = -PLAYER_SPEED
                 # se clicar na seta da direita, anda 3 para a direita no eixo x
                 if event.key == self.DIREITA:
-                    self.mudar_x = 3
+                    self.mudar_x = PLAYER_SPEED
 
             # se soltar qualquer tecla, não faz nada
             if event.type == pygame.KEYUP:
@@ -237,7 +255,7 @@ class Game:
 
     # Informa a quantidade de hazard que passaram e a Pontuação
     def score_card(self, screen, h_passou, score):
-        font = pygame.font.SysFont(None, 35)
+        font = pygame.font.SysFont(None, FONT_SIZE_SCORE)
         passou = font.render("Passou: " + str(h_passou), True, (255, 255, 128))
         score = font.render("Score: " + str(score), True, (253, 231, 32))
         screen.blit(passou, (0, 50))
@@ -252,8 +270,8 @@ class Game:
         h_passou = 0
 
         # variáveis para movimento de Plano de Fundo/Background
-        velocidade_background = 5
-        velocidade_hazard = 7
+        velocidade_background = BACKGROUND_SPEED
+        velocidade_hazard = HAZARD_SPEED
 
         faixaA_x = 375
         faixaA_y = 0
@@ -262,15 +280,15 @@ class Game:
         h_y = -500
 
         # Info Hazard
-        h_width = 130 #55
-        h_height = 130 #120
+        h_width = HAZARD_WIDTH #55
+        h_height = HAZARD_HEIGHT #120
 
         # movimento da margem esquerda
         movL_x = 0
         movL_y = 0
 
         # movimento da margem direita
-        movR_x = 740
+        movR_x = MARGEM_DIREITA
         movR_y = 0
 
         # Criar o Plano de fundo
@@ -301,7 +319,7 @@ class Game:
         # Inicializamos o relogio e o dt que vai limitar o valor de FPS
         # frames por segundo do jogo
         clock = pygame.time.Clock()
-        dt = 16
+        dt = FRAME_TIME_MS
 
         # assim iniciamos o loop principal do programa
         while self.run:
@@ -338,10 +356,11 @@ class Game:
 
             # Restrições do movimento do Player
             # Se o Player bate na lateral não é Game Over
-            if x > 760 - 92 or x < 40 + 5:
+            # CONSERTAR: ADICIONAR METODOS PARA LIMITES ESQUERDOS E DIREITOS.
+            if x > MARGEM_DIREITA - self.player.image.get_width() or x < MARGEM_ESQUERDA + self.player.image.get_width():
                 self.screen.blit(self.render_text_bateulateral, (80, 200))
                 pygame.display.update()  # atualizar a tela
-                time.sleep(3)
+                time.sleep(COLLISION_DELAY)
                 self.loop()
                 self.run = False
 
@@ -358,7 +377,7 @@ class Game:
                 hzrd = random.randint(0, 4)
                 # determinando quantos hazard passaram e a pontuação
                 h_passou = h_passou + 1
-                score = h_passou * 10
+                score = h_passou * SCORE_PER_HAZARD
 
             # restrições para o game over
             if y < h_y + h_height:
@@ -366,7 +385,7 @@ class Game:
                     if x < h_x + h_width or x < h_x - 56:
                         self.screen.blit(self.render_text_perdeu, (80, 200))
                         pygame.display.update()
-                        time.sleep(3)
+                        time.sleep(COLLISION_DELAY)
                         self.run = False
 
             # atualizando a tela
