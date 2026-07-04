@@ -1,5 +1,5 @@
 from constants import PLAYER_WIDTH, PLAYER_HEIGHT
-from object import Object
+from .object import Object
 
 
 class Player(Object):

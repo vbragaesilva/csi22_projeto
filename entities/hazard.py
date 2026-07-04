@@ -1,5 +1,5 @@
 from constants import HAZARD_WIDTH, HAZARD_HEIGHT
-from object import Object
+from .object import Object
 
 
 class Hazard(Object):
