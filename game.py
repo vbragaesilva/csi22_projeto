@@ -1,7 +1,8 @@
-from constants import ( 
-    WIDTH, HEIGHT, FONT_SIZE_MESSAGE, PLAYER_SPEED, 
-    FONT_SIZE_SCORE, BACKGROUND_SPEED, HAZARD_SPEED, HAZARD_WIDTH, HAZARD_HEIGHT, 
-    MARGEM_DIREITA, MARGEM_ESQUERDA, FRAME_TIME_MS, COLLISION_DELAY, SCORE_PER_HAZARD) 
+from constants import (
+    WIDTH, HEIGHT, FONT_SIZE_MESSAGE, PLAYER_SPEED,
+    BACKGROUND_SPEED, HAZARD_SPEED, MARGEM_DIREITA,
+    MARGEM_ESQUERDA, FRAME_TIME_MS, COLLISION_DELAY,
+)
 import pygame
 import random
 import time
@@ -96,53 +97,91 @@ class Game:
         self.background.move (self.screen, obj_movL_x, obj_movL_y, obj_movR_x,obj_movR_y)
     # move_background()
 
+    def initialize_game(self):
+        self.scoreboard = Score()
+        self.background = Background()
+        self.mudar_x = 0.0
+
+        self.movL_x = 0
+        self.movL_y = 0
+        self.movR_x = MARGEM_DIREITA
+        self.movR_y = 0
+
+        player_x = (self.width - 56) / 2
+        player_y = self.height - 125
+        self.player = Player(player_x, player_y)
+
+        hazard_x = random.randrange(125, 660)
+        hazard_y = -500
+        self.hazards = [
+            Hazard("Images/nave.png", hazard_x, hazard_y),
+            Hazard("Images/satelite.png", hazard_x, hazard_y),
+            Hazard("Images/cometa.png", hazard_x, hazard_y),
+            Hazard("Images/planeta.png", hazard_x, hazard_y),
+            Hazard("Images/ameaca.png", hazard_x, hazard_y),
+        ]
+        self.hazard_index = 0
+
+    def update_background(self):
+        self.move_background(
+            self.movL_x,
+            self.movL_y,
+            self.movR_x,
+            self.movR_y,
+        )
+        self.movL_y += BACKGROUND_SPEED
+        self.movR_y += BACKGROUND_SPEED
+
+        if self.movL_y > 640 and self.movR_y > 640:
+            self.movL_y -= 640
+            self.movR_y -= 640
+
+    def update_player(self):
+        self.player.move(self.mudar_x, 0)
+        self.draw_player(self.player.x, self.player.y)
+
+    def update_hazard(self):
+        hazard = self.hazards[self.hazard_index]
+        hazard.move(0, HAZARD_SPEED / 4)
+        self.draw_hazard(self.hazard_index, hazard.x, hazard.y)
+        hazard.move(0, HAZARD_SPEED)
+
+        if hazard.y > self.height:
+            self.hazard_index = random.randrange(len(self.hazards))
+            self.hazards[self.hazard_index].reaparecer()
+            self.scoreboard.counter_passed_hazard()
+
+    def check_collisions(self):
+        if (
+            self.player.limite_direito() > MARGEM_DIREITA
+            or self.player.limite_esquerdo() < MARGEM_ESQUERDA
+        ):
+            self.screen.blit(self.render_text_bateulateral, (80, 200))
+            pygame.display.update()
+            time.sleep(COLLISION_DELAY)
+            self.initialize_game()
+            return
+
+        hazard = self.hazards[self.hazard_index]
+        if self.player.y < hazard.y + hazard.image.get_height():
+            if self.player.x > hazard.x or self.player.x > hazard.x - 56:
+                if (
+                    self.player.x < hazard.x + hazard.image.get_width()
+                    or self.player.x < hazard.x - 56
+                ):
+                    self.screen.blit(self.render_text_perdeu, (80, 200))
+                    pygame.display.update()
+                    time.sleep(COLLISION_DELAY)
+                    self.run = False
+
+    def draw_hud(self):
+        self.scoreboard.draw(self.screen)
+
     def loop(self):
         """
         Laço principal
         """
-
-        self.scoreboard = Score()
-
-        # variáveis para movimento de Plano de Fundo/Background
-        velocidade_background = BACKGROUND_SPEED
-        velocidade_hazard = HAZARD_SPEED
-
-        faixaA_x = 375
-        faixaA_y = 0
-        hzrd = 0
-        h_x = random.randrange(125, 660)
-        h_y = -500
-
-        # Info Hazard
-        h_width = HAZARD_WIDTH #55
-        h_height = HAZARD_HEIGHT #120
-
-        # movimento da margem esquerda
-        movL_x = 0
-        movL_y = 0
-
-        # movimento da margem direita
-        movR_x = MARGEM_DIREITA
-        movR_y = 0
-
-        # Criar o Plano de fundo
-        self.background = Background()
-
-        # Posicao do Player
-        x = (self.width - 56) / 2
-        y = self.height - 125
-
-        # Criar o Player
-        self.player = Player(x, y)
-
-        # Criar Hazards
-        self.hazards = [
-            Hazard("Images/nave.png", h_x, h_y),
-            Hazard("Images/satelite.png", h_x, h_y),
-            Hazard("Images/cometa.png", h_x, h_y),
-            Hazard("Images/planeta.png", h_x, h_y),
-            Hazard("Images/ameaca.png", h_x, h_y),
-        ]
+        self.initialize_game()
 
         # Inicializamos o relogio e o dt que vai limitar o valor de FPS
         # frames por segundo do jogo
@@ -162,57 +201,11 @@ class Game:
             # Desenha o background buffer
             self.elements_draw()
 
-            # adiciona movimento ao background
-
-            self.move_background (movL_x, movL_y, movR_x, movR_y)
-            movL_y = movL_y + velocidade_background
-            movR_y = movR_y + velocidade_background
-
-            #se a imagem ultrapassar a extremidade da tela, move de volta
-            if movL_y > 640 and movR_y > 640:
-                movL_y -= 640
-                movR_y -= 640
-
-            # Altera a coordenada x do Player de acordo comas mudanças no event_handle() para ele se mover
-            x = x + self.mudar_x
-
-            # Mostrar Player
-            self.draw_player (x, y)
-
-            # Mostrar score
-            self.scoreboard.draw(self.screen)
-
-            # Restrições do movimento do Player
-            # Se o Player bate na lateral não é Game Over
-            # CONSERTAR: ADICIONAR METODOS PARA LIMITES ESQUERDOS E DIREITOS.
-            if x > MARGEM_DIREITA - self.player.image.get_width() or x < MARGEM_ESQUERDA + self.player.image.get_width():
-                self.screen.blit(self.render_text_bateulateral, (80, 200))
-                pygame.display.update()  # atualizar a tela
-                time.sleep(COLLISION_DELAY)
-                self.loop()
-                self.run = False
-
-            # adicionando movimento ao hazard
-            h_y = h_y + velocidade_hazard / 4
-            self.draw_hazard(hzrd, h_x, h_y)
-            h_y = h_y + velocidade_hazard
-
-            # definindo onde hazard vai aparecer, recomeçando a posição do obstaculo e da faixa
-            if h_y > self.height:
-                faixaA_y = 0
-                hzrd = random.randrange(len(self.hazards))
-                h_x, h_y = self.hazards[hzrd].reaparecer()
-                # determinando quantos hazard passaram e a pontuação
-                self.scoreboard.counter_passed_hazard()
-
-            # restrições para o game over
-            if y < h_y + h_height:
-                if x > h_x or x > h_x - 56:
-                    if x < h_x + h_width or x < h_x - 56:
-                        self.screen.blit(self.render_text_perdeu, (80, 200))
-                        pygame.display.update()
-                        time.sleep(COLLISION_DELAY)
-                        self.run = False
+            self.update_background()
+            self.update_player()
+            self.draw_hud()
+            self.update_hazard()
+            self.check_collisions()
 
             # atualizando a tela
             pygame.display.update()
